@@ -88,7 +88,7 @@ class QuadGantryLevel:
             return
 
         speed = self.probe_helper.get_lift_speed()
-        self.z_helper.adjust_steppers(z_adjust, speed)
+        return self.z_helper.adjust_steppers(z_adjust, speed)
     def linefit(self,p1,p2):
         if p1[1] == p2[1]:
             # Straight line

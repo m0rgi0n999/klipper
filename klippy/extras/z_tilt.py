@@ -12,6 +12,7 @@ class ZAdjustHelper:
         self.name = config.get_name()
         self.z_count = z_count
         self.z_steppers = []
+        # XXX - read and store retry config
         self.printer.register_event_handler("klippy:connect",
                                             self.handle_connect)
     def handle_connect(self):
@@ -24,6 +25,10 @@ class ZAdjustHelper:
         if len(z_steppers) < 2:
             raise config.error("%s requires multiple z steppers" % (self.name,))
         self.z_steppers = z_steppers
+    def check_retry(self, adjustments):
+        # XXX - implement retry check
+        if 0:
+            return "retry"
     def adjust_steppers(self, adjustments, speed):
         toolhead = self.printer.lookup_object('toolhead')
         gcode = self.printer.lookup_object('gcode')
@@ -59,6 +64,7 @@ class ZAdjustHelper:
         curpos[2] += first_stepper_offset
         toolhead.set_position(curpos)
         gcode.reset_last_position()
+        return self.check_retry(adjustments)
 
 class ZTilt:
     def __init__(self, config):
@@ -108,7 +114,7 @@ class ZTilt:
                     - x_adjust * offsets[0] - y_adjust * offsets[1])
         adjustments = [-(x*x_adjust + y*y_adjust + z_adjust)
                        for x, y in self.z_positions]
-        self.z_helper.adjust_steppers(adjustments, speed)
+        return self.z_helper.adjust_steppers(adjustments, speed)
 
 def load_config(config):
     return ZTilt(config)
